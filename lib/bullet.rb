@@ -48,7 +48,7 @@ module Bullet
 
     def enable=(enable)
       @enable = @n_plus_one_query_enable = @counter_cache_enable = enable
-      @unused_eager_loading_enable = false
+      @unused_eager_loading_enable = enable
       if enable?
         reset_whitelist
         unless orm_pathches_applied

@@ -89,7 +89,7 @@ module Bullet
         def create_notification(callers, klazz, associations)
           data = load_file
           temp = extract_from_caller_trace(callers,klazz,associations)
-          # temp = "#{Thread.current[:controller]}:#{Thread.current[:action]}:#{klazz}:#{associations}"
+          temp = "#{Thread.current[:controller]}:#{Thread.current[:action]}:#{klazz}:#{associations}"
           print temp
           check_bullet_files = data[temp].present?
           notify_associations = Array(associations) - Bullet.get_whitelist_associations(:n_plus_one_query, klazz)
