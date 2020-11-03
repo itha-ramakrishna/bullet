@@ -10,6 +10,7 @@ gem 'activerecord-import'
 gem 'rspec'
 gem 'guard'
 gem 'guard-rspec'
+gem 'byebug'
 
 gem 'coveralls', require: false
 

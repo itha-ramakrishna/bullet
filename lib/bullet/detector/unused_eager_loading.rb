@@ -56,30 +56,38 @@ module Bullet
         end
 
         private
-          def create_notification(callers, klazz, associations)
-            notify_associations = Array(associations) - Bullet.get_whitelist_associations(:unused_eager_loading, klazz)
 
-            if notify_associations.present?
-              notice = Bullet::Notification::UnusedEagerLoading.new(callers, klazz, notify_associations)
-              Bullet.notification_collector.add(notice)
-            end
-          end
+        def create_notification(callers, klazz, associations)
+          data = load_file
+          temp = "#{Thread.current[:controller]}:#{Thread.current[:action]}:#{klazz}:#{associations}"
+          check_bullet_files = data[temp].present?
+          notify_associations = Array(associations) - Bullet.get_whitelist_associations(:unused_eager_loading, klazz)
 
-          def call_associations(bullet_key, associations)
-            all = Set.new
-            eager_loadings.similarly_associated(bullet_key, associations).each do |related_bullet_key|
-              coa = call_object_associations[related_bullet_key]
-              next if coa.nil?
-              all.merge coa
-            end
-            all.to_a
+          # notify_associations = notify_associations - associations if check_bullet_files
+          # puts "Notification -----------#{data}------#{check_bullet_files} ----#{associations} --------------- #{notify_associations} --------------------------------"
+          if notify_associations.present?
+            notice = Bullet::Notification::UnusedEagerLoading.new(callers, klazz, notify_associations)
+            Bullet.notification_collector.add(notice) if !check_bullet_files
           end
+        end
 
-          def diff_object_associations(bullet_key, associations)
-            potential_associations = associations - call_associations(bullet_key, associations)
-            potential_associations.reject { |a| a.is_a?(Hash) }
+
+        def call_associations(bullet_key, associations)
+          all = Set.new
+          eager_loadings.similarly_associated(bullet_key, associations).each do |related_bullet_key|
+            coa = call_object_associations[related_bullet_key]
+            next if coa.nil?
+            all.merge coa
           end
-      end
+          all.to_a
+        end
+
+        def diff_object_associations(bullet_key, associations)
+          potential_associations = associations - call_associations(bullet_key, associations)
+          potential_associations.reject { |a| a.is_a?(Hash) }
+        end
     end
   end
+  end
 end
+

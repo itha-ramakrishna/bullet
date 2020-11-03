@@ -27,6 +27,11 @@ module Bullet
           Thread.current[:bullet_possible_objects]
         end
 
+        def load_file
+          file = File.open "/Users/ivsramakrishna/Freshsales/freshsales/config/bullet.json"
+          data = JSON.load file
+        end
+
         # impossible_objects keep the class to objects relationships
         # that the objects may not cause N+1 query.
         # e.g. { Post => ["Post:1", "Post:2"] }

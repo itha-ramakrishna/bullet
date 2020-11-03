@@ -5,6 +5,7 @@ require 'bullet/ext/object'
 require 'bullet/ext/string'
 require 'bullet/dependency'
 require 'bullet/stack_trace_filter'
+require 'json'
 
 module Bullet
   extend Dependency
@@ -46,7 +47,8 @@ module Bullet
                   Bullet::Detector::CounterCache ]
 
     def enable=(enable)
-      @enable = @n_plus_one_query_enable = @unused_eager_loading_enable = @counter_cache_enable = enable
+      @enable = @n_plus_one_query_enable = @counter_cache_enable = enable
+      @unused_eager_loading_enable = false
       if enable?
         reset_whitelist
         unless orm_pathches_applied

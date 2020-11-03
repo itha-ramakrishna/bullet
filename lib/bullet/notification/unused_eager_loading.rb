@@ -19,6 +19,8 @@ module Bullet
 
       def title
         "Unused Eager Loading #{@path ? "in #{@path}" : 'detected'}"
+      def call_stack_messages
+        (['UnEager Loading  call stack'] + @callers).join( "\n  " )
       end
     end
   end
