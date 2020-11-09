@@ -27,9 +27,20 @@ module Bullet
           Thread.current[:bullet_possible_objects]
         end
 
-        def load_file
-          file = File.open "/Users/ivsramakrishna/Freshsales/freshsales/config/bullet.json"
-          data = JSON.load file
+        def load_file(type)
+          file = File.open "/Users/ivsramakrishna/Freshsales/freshsales/config/#{type}_bullet.json","a+"
+          puts "#{file.size}"
+          data = JSON.load(file) || JSON.load(file<<{}) || {}
+          file.close
+          data
+        end
+
+        def write_file(type, data, key)
+          file = File.open "/Users/ivsramakrishna/Freshsales/freshsales/config/#{type}_bullet.json","w"
+          puts "#{file.size}"
+          data.merge!({key=>true})
+          file.write(JSON.pretty_generate(data))
+          file.close
         end
 
         # impossible_objects keep the class to objects relationships

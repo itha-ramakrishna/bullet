@@ -84,18 +84,22 @@ module Bullet
           debug_line = callers[0]
           file_name = debug_line.match('freshsales.*:\d.*:').to_s[0..-2]
           method_name = debug_line.match('`.*').to_s[1..-2]
-          n_plus_one_search_key = "#{file_name}:#{method_name}:#{klazz}:#{associations}"
+          n_plus_one_search_key = "#{klazz}:#{associations}:#{file_name}"
         end
         def create_notification(callers, klazz, associations)
-          data = load_file
+          data = load_file("NPlusOne_test")
           temp = extract_from_caller_trace(callers,klazz,associations)
-          temp = "#{Thread.current[:controller]}:#{Thread.current[:action]}:#{klazz}:#{associations}"
-          print temp
+          # temp = "#{Thread.current[:controller]}:#{Thread.current[:action]}:#{klazz}:#{associations}"
+          puts "Callers -----------\n#{callers}\n--------------"
+          puts "Extracting from call trace ---- #{temp}---"
           check_bullet_files = data[temp].present?
+          if !check_bullet_files
+            write_file("NPlusOne_test",data, temp)
+          end
           notify_associations = Array(associations) - Bullet.get_whitelist_associations(:n_plus_one_query, klazz)
           if notify_associations.present?
             notice = Bullet::Notification::NPlusOneQuery.new(callers, klazz, notify_associations)
-            Bullet.notification_collector.add(notice)
+            # Bullet.notification_collector.add(notice)
           end
         end
       end

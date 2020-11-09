@@ -59,17 +59,19 @@ module Bullet
         private
 
         def create_notification(callers, klazz, associations)
-          data = load_file
+          data = load_file("UnEagerLoad_test")
           temp = "#{Thread.current[:controller]}:#{Thread.current[:action]}:#{klazz}:#{associations}"
           check_bullet_files = data[temp].present?
           notify_associations = Array(associations) - Bullet.get_whitelist_associations(:unused_eager_loading, klazz)
+          puts "Notification -----------#{temp}------#{check_bullet_files} ----#{associations} --------------- #{notify_associations} --------------------------------"
 
           # notify_associations = notify_associations - associations if check_bullet_files
-          puts "Notification -----------#{data}------#{check_bullet_files} ----#{associations} --------------- #{notify_associations} --------------------------------"
+          if !check_bullet_files
+            write_file("UnEagerLoad_test", data, temp)
+          end
           if notify_associations.present?
-            # byebug
             notice = Bullet::Notification::UnusedEagerLoading.new(callers, klazz, notify_associations)
-            Bullet.notification_collector.add(notice) if !check_bullet_files
+            # Bullet.notification_collector.add(notice) if !check_bullet_files
           end
         end
 
